@@ -24,8 +24,15 @@ lambda= lr/lh;   %[] Ratio Crank-rod
 %Masses
 ms=0.456;       %[kg] Slider mass
 mr=0.568;       %[kg] Rod mass
-mk=0.3;         %[kg] Crankshaft mass           %%%%%%%%%%%%%%%%%%%%%% RICONTROLLA %%%%%%%%%%%%%%%%%%%
-ma=ms+mr*lh/lr; %[kg] Sum or the translating masses for one cylinder   %%%%%%%%%%%%%%%%%%%%%%%%%%%  RICONTROLLA %%%%%%%%%%%%%%%%%%%%%
+mk=0.3;         %[kg] Crankshaft mass                                                %%%%%%%%%%%%%%%%%%%%%% RICONTROLLA %%%%%%%%%%%%%%%%%%%
+ma=ms+mr*lh/lr; %[kg] Sum or the translating masses for one cylinder                 %%%%%%%%%%%%%%%%%%%%%  RICONTROLLA %%%%%%%%%%%%%%%%%%%
+
+%Otto cycle
+k=1.4;                           %[] Expansion coefficent
+P0=1e5;                          %[Pa] Atmospheric pressure
+cr=9.6;                          %[] Compression ratio
+Pd=P0*(2*lk/(2*lk-xd))^k;         %[Pa]Gas pressure in the cyclinder where 2*lk is the minimum distance of the slider
+
 
 %Mechanisms Position
 syms phi(t)                     %[rad] angle position of the Crankshaft
@@ -61,7 +68,7 @@ xd_dot=diff(xd,t);
 
 phi_dot=diff(phi,t); 
 
-
+phi=t;
 %% Euelr & Langrange equations
 
 %Kinetic energy
@@ -69,7 +76,8 @@ K_rot= (1/2)*Jr*(phi_dot)^2;        %Kinetic energy of all rotation masses
 K_slider= (1/2)*ma*(xd_dot)^2;      %Kinetic energy of the slider
 K_tot=K_rot+K_slider;               %Total kientic energy
 
-L= diff(K_tot,t)*diff(K_tot,phi_dot)-diff(
+U= (mk + mr*(lr-lh)/lr)*9.81*lk*sin(phi);
+L= diff(diff(K_tot,phi,2),t)-diff(K_tot,phi) + diff(U,phi);
 
-
-
+Fd=P0*Ad*(((2*lk/(2*lk-xd))^k)-1);  %[N]Formula of the gasforce
+Fdt=Fd*sin(phi)*((1+lambda*cos(phi))/(sqrt(1-                                %[N]Tangential component of the Fd

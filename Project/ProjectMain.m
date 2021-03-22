@@ -27,6 +27,12 @@ mr=0.568;       %[kg] Rod mass
 mk=0.3;         %[kg] Crankshaft mass                                                %%%%%%%%%%%%%%%%%%%%%% RICONTROLLA %%%%%%%%%%%%%%%%%%%
 ma=ms+mr*lh/lr; %[kg] Sum or the translating masses for one cylinder                 %%%%%%%%%%%%%%%%%%%%%  RICONTROLLA %%%%%%%%%%%%%%%%%%%
 
+%Otto cycle
+k=1.4;                           %[] Expansion coefficent
+P0=1e5;                          %[Pa] Atmospheric pressure
+cr=9.6;                          %[] Compression ratio
+
+
 %Mechanisms Position
 syms phi(t)                     %[rad] angle position of the Crankshaft
 syms beta(t)                    %[rad] angle bw connection rod & ground
@@ -59,6 +65,8 @@ ps=[psx; psy; psz];
 xd=lk*(1+cos(phi))+lr*(-1+cos(beta));       %displacement of the piston 
 xd_dot=diff(xd,t);
 
+Pd=P0*(2*lk/(2*lk-xd))^k;         %[Pa]Gas pressure in the cyclinder where 2*lk is the minimum distance of the slider
+
 phi_dot=diff(phi,t); 
 
 phi=t;
@@ -70,8 +78,9 @@ K_slider= (1/2)*ma*(xd_dot)^2;      %Kinetic energy of the slider
 K_tot=K_rot+K_slider;               %Total kientic energy
 
 U= (mk + mr*(lr-lh)/lr)*9.81*lk*sin(phi);
-
 L= diff(diff(K_tot,phi,2),t)-diff(K_tot,phi) + diff(U,phi);
 
-
-
+Fd=P0*Ad*(((2*lk/(2*lk-xd))^k)-1);  %[N]Formula of the gasforce
+Fdt=Fd*sin(phi)*((1+lambda*cos(phi))/(sqrt(1-(lambda^2)*(sin(phi)^2))));                                %[N]Tangential component of the Fd
+Lagrangian = L-Fdt;
+[a,b]=ode45(@Lagrangian(t),[0:0.1:1000],0);
