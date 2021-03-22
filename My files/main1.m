@@ -13,7 +13,7 @@ syms phi(t) theta(t) psi(t) %unknown functions
 syms x(t)   y(t)    z(t)    %unknown functions
 syms s %dummy variable
 
-tstep=1000;     %change it to imporve/relax risolution
+tstep=100;     %change it to imporve/relax risolution
 RPM = 3000;    % so I'll need 0.02s for complete each rampage
 d_dphi=RPM/60;   %[Hz] since I'm going at 3000rpm. I impose constant the angular speed of my crank
 
@@ -31,6 +31,7 @@ m3= 1.25;   %Slider [kg]
 l1=0.03;     %Crank  [m]
 l2=0.12;     %Rod    [m]
 l3=(l1*cos(phi)+sqrt(((l1*cos(phi)).^2)-(l1^2-l2)))/(l1^2-l2);
+
 %intertial moments
 Im1=0.000072;     %Crank  [kg*m2]
 Im2=0.0000624;    %Rod    [kg*m2]
@@ -43,6 +44,12 @@ J2=(1/3)*m2*l2^2;
 P1=[zeros(1,tstep);zeros(1,tstep);zeros(1,tstep)];
 P2=[l1*cos(phi);l2*sin(phi);zeros(1,tstep)];
 P3=[l3;zeros(1,tstep);zeros(1,tstep)];
+
+%% PLOT TEST
+for i = 1: tstep
+    hold on
+    plot(l1*cos(phi(i)),l2*sin(phi(i)))
+end
 
 %rotation matrices
 R1(s)=[ cos(s) sin(s) 0     %yaw
