@@ -49,7 +49,7 @@ Jr=Jf1 + (mr*(lr-lh)/lr)*lk^2;       %[kg*m^2] Inertial of all rotating masses o
 
 beta= acos(sqrt(1-(lambda^2)*(sin(phi).^2))); 
 
-px=0;py=0; py=0;
+px=0; py=0; pz=0;
 p=[px; py; pz];
 
 pkx=lk*cos(phi);
@@ -69,7 +69,6 @@ Pd=P0*(2*lk/(2*lk-xd))^k;         %[Pa]Gas pressure in the cyclinder where 2*lk 
 
 phi_dot=diff(phi,t); 
 
-phi=t;
 %% Euelr & Langrange equations
 
 %Kinetic energy
@@ -80,7 +79,7 @@ K_tot=K_rot+K_slider;               %Total kientic energy
 U= (mk + mr*(lr-lh)/lr)*9.81*lk*sin(phi);
 L= diff(diff(K_tot,phi,2),t)-diff(K_tot,phi) + diff(U,phi);
 
-Fd=P0*Ad*(((2*lk/(2*lk-xd))^k)-1);  %[N]Formula of the gasforce
-Fdt=Fd*sin(phi)*((1+lambda*cos(phi))/(sqrt(1-(lambda^2)*(sin(phi)^2))));                                %[N]Tangential component of the Fd
-Lagrangian = L-Fdt;
-[a,b]=ode45(@Lagrangian(t),[0:0.1:1000],0);
+Fd=P0*Ad*(((2*lk/(2*lk-xd))^k)-1);                                           %[N]Formula of the gasforce
+Fdt=Fd*sin(phi)*((1+lambda*cos(phi))/(sqrt(1-(lambda^2)*(sin(phi)^2))));     %[N]Tangential component of the Fd
+Lagrangian = L-Fdt == 0;
+dsolve(Lagrangian)
