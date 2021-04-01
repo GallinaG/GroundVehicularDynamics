@@ -10,27 +10,27 @@ clear
 %% Parameter & variables
 
 %Mechanism Parameters
-syms t
+syms t real
 
 %Dimentions
-lr=0.144;        %[m] Rod lenght
-lh=lr/3;         %[m] Distance bw central of gravity of the rod and the crankshaft junction (big eye)
-lk=0.054;        %[m] Crank radious
-xs=0.13;         %[m] Slider stroke (corsa dello slider)
-ds=0.082;        %[m] Slider diameter
-Ad=pi*(ds/2)^2;  %[m^2] Slider surface area
-lambda= lr/lh;   %[] Ratio Crank-rod
+syms lr          %[m] Rod lenght
+syms lh     %[m] Distance bw central of gravity of the rod and the crankshaft junction (big eye)
+syms lk          %[m] Crank radious
+syms xs          %[m] Slider stroke (corsa dello slider)
+syms ds          %[m] Slider diameter
+syms Ad;  %[m^2] Slider surface area
+syms lambda   %[] Ratio Crank-rod
 
 %Masses
-ms=0.456;       %[kg] Slider mass
-mr=0.568;       %[kg] Rod mass
-mk=0.3;         %[kg] Crankshaft mass                                                %%%%%%%%%%%%%%%%%%%%%% RICONTROLLA %%%%%%%%%%%%%%%%%%%
-ma=ms+mr*lh/lr; %[kg] Sum or the translating masses for one cylinder                 %%%%%%%%%%%%%%%%%%%%%  RICONTROLLA %%%%%%%%%%%%%%%%%%%
+syms ms       %[kg] Slider mass
+syms mr       %[kg] Rod mass
+syms mk         %[kg] Crankshaft mass                                                %%%%%%%%%%%%%%%%%%%%%% RICONTROLLA %%%%%%%%%%%%%%%%%%%
+syms ma %[kg] Sum or the translating masses for one cylinder                 %%%%%%%%%%%%%%%%%%%%%  RICONTROLLA %%%%%%%%%%%%%%%%%%%
 
 %Otto cycle
-k=1.4;                           %[] Expansion coefficent
-P0=1e5;                          %[Pa] Atmospheric pressure
-cr=9.6;                          %[] Compression ratio
+syms k                           %[] Expansion coefficent
+syms P0                          %[Pa] Atmospheric pressure
+syms cr                          %[] Compression ratio
 
 
 %Mechanisms Position
@@ -41,7 +41,7 @@ syms pkx(t) pky(t) pkz(t)       %[m] Crank-rod junction position
 syms psx(t) psy(t) psz(t)       %[m] Rod-slider junction position
 
 %Inertial forces
-Jf1=0.007627;                        %[kg*m^2] Crank-Cranckshaf inertial for one cylinder
+syms Jf1                        %[kg*m^2] Crank-Cranckshaf inertial for one cylinder
 Jr=Jf1 + (mr*(lr-lh)/lr)*lk^2;       %[kg*m^2] Inertial of all rotating masses on a singular cylinder 
 
 
@@ -68,7 +68,7 @@ xd_dot=diff(xd,t);
 Pd=P0*(2*lk/(2*lk-xd))^k;         %[Pa]Gas pressure in the cyclinder where 2*lk is the minimum distance of the slider
 
 phi_dot=diff(phi,t); 
-
+syms Omega(t)
 %% Euelr & Langrange equations
 
 %Kinetic energy
@@ -76,10 +76,10 @@ K_rot= (1/2)*Jr*(phi_dot)^2;        %Kinetic energy of all rotation masses
 K_slider= (1/2)*ma*(xd_dot)^2;      %Kinetic energy of the slider
 K_tot=K_rot+K_slider;               %Total kientic energy
 
+K_tot = subs(K_tot, phi_dot,Omega); 
 U= (mk + mr*(lr-lh)/lr)*9.81*lk*sin(phi);
-L= diff(diff(K_tot,phi,2),t)-diff(K_tot,phi) + diff(U,phi);
-
+alpha=diff(K_tot,Omega);
+L= diff(alpha,t)-diff(K_tot,phi) + diff(U,phi);
 Fd=P0*Ad*(((2*lk/(2*lk-xd))^k)-1);                                           %[N]Formula of the gasforce
 Fdt=Fd*sin(phi)*((1+lambda*cos(phi))/(sqrt(1-(lambda^2)*(sin(phi)^2))));     %[N]Tangential component of the Fd
-Lagrangian = L-Fdt == 0;
-dsolve(Lagrangian)
+
